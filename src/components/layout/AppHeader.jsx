@@ -1,14 +1,87 @@
-import { Layout } from "antd";
+import { Layout, Select, Space, Button, Modal, Drawer } from "antd";
+import CryptoContext from "../../context/crypto-context";
+import CoinInfoModal from "../CoinInfoModal";
+import AddAssetForm from "../AddAssetForm";
+import { useContext, useEffect, useState } from "react";
 
 const headerStyle = {
-  textAlign: "center",
-  color: "#fff",
+  width: "100%",
   height: 60,
-  paddingInline: 48,
-  lineHeight: "64px",
-  backgroundColor: "#4096ff",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  textAlign: "center",
+  padding: "1rem",
 };
 
 export default function AppHeader() {
-  return <Layout.Header style={headerStyle}>Header</Layout.Header>;
+  const [select, setSelect] = useState(false);
+  const [modal, setModal] = useState(false);
+  const [coin, setCoin] = useState(null);
+  const [drawer, setdDrawer] = useState(false);
+  const { crypto } = useContext(CryptoContext);
+
+  useEffect(() => {
+    const keypress = (event) => {
+      if (event.code === "Slash") {
+        setSelect((prev) => !prev);
+      }
+    };
+
+    document.addEventListener("keypress", keypress);
+
+    return () => document.removeEventListener("keypress", keypress);
+  }, []);
+
+  function handleSelect(value) {
+    setCoin(crypto.find((c) => c.id === value));
+    setModal(true);
+  }
+
+  return (
+    <Layout.Header style={headerStyle}>
+      <Select
+        onSelect={handleSelect}
+        onClick={() => setSelect((prev) => !prev)}
+        open={select}
+        style={{
+          width: "250px",
+        }}
+        value={"press / to open"}
+        options={crypto.map((coin) => ({
+          label: coin.name,
+          value: coin.id,
+          emoji: coin.icon,
+        }))}
+        optionRender={(option) => (
+          <Space>
+            <img
+              style={{ width: 20 }}
+              src={option.data.emoji}
+              alt={option.data.label}
+            />{" "}
+            {option.data.label}
+          </Space>
+        )}
+      />
+
+      <Button type="primary" onClick={() => setdDrawer(true)}>
+        Add Asset
+      </Button>
+
+      <Modal open={modal} onCancel={() => setModal(false)} footer={null}>
+        <CoinInfoModal coin={coin} />
+      </Modal>
+
+      <Drawer
+        width={600}
+        title="Add Asset"
+        onClose={() => setdDrawer(false)}
+        open={drawer}
+        destroyOnClose
+      >
+        <AddAssetForm onClose={() => setdDrawer(false)} />
+      </Drawer>
+    </Layout.Header>
+  );
 }
