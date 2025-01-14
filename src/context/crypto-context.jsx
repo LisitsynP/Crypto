@@ -22,6 +22,7 @@ export function CryptoContextProvider({ children }) {
         growPercent: percentDifference(asset.price, coin.price),
         totalAmount: asset.amount * coin.price,
         totalProfit: coin.price * asset.amount - asset.price * asset.amount,
+        name: coin.name,
         ...asset,
       };
     });
