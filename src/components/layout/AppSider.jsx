@@ -17,7 +17,6 @@ export default function AppSider() {
         return (
           <Card key={asset.id} style={{ marginBottom: "1rem" }}>
             <Statistic
-              // title={capitalize(asset.id)}
               title={
                 <div>
                   <img

@@ -18,8 +18,7 @@ export default function AppHeader() {
   const [select, setSelect] = useState(false);
   const [modal, setModal] = useState(false);
   const [coin, setCoin] = useState(null);
-  const [drawer, setdDrawer] = useState(false);
-  const { crypto } = useContext(CryptoContext);
+  const { crypto, drawer, changeDrawer } = useContext(CryptoContext);
 
   useEffect(() => {
     const keypress = (event) => {
@@ -65,7 +64,7 @@ export default function AppHeader() {
         )}
       />
 
-      <Button type="primary" onClick={() => setdDrawer(true)}>
+      <Button type="primary" onClick={() => changeDrawer(true)}>
         Add Asset
       </Button>
 
@@ -76,11 +75,11 @@ export default function AppHeader() {
       <Drawer
         width={600}
         title="Add Asset"
-        onClose={() => setdDrawer(false)}
+        onClose={() => changeDrawer(false)}
         open={drawer}
         destroyOnClose
       >
-        <AddAssetForm onClose={() => setdDrawer(false)} />
+        <AddAssetForm onClose={() => changeDrawer(false)} />
       </Drawer>
     </Layout.Header>
   );

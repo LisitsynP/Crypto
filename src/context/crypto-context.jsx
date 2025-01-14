@@ -6,12 +6,14 @@ const CryptoContext = createContext({
   assets: [],
   crypto: [],
   loading: false,
+  drawer: false,
 });
 
 export function CryptoContextProvider({ children }) {
   const [loading, setLoading] = useState(false);
   const [crypto, setCrypto] = useState([]);
   const [assets, setAssets] = useState([]);
+  const [drawer, setdDrawer] = useState(false);
 
   function mapAssets(assets, result) {
     return assets.map((asset) => {
@@ -33,7 +35,6 @@ export function CryptoContextProvider({ children }) {
       setLoading(true);
       const { result } = await fakeFetchCrypto();
       const assets = await FetchAssets();
-
       setAssets(mapAssets(assets, result));
       setCrypto(result);
       setLoading(false);
@@ -61,15 +62,20 @@ export function CryptoContextProvider({ children }) {
       return asset;
     });
 
-    console.log("up", updatedAsset);
     setAssets(() => {
       if (update) return mapAssets([...updatedAsset], crypto);
       return mapAssets([...updatedAsset, newAsset], crypto);
     });
   }
 
+  function changeDrawer(bool) {
+    setdDrawer(bool);
+  }
+
   return (
-    <CryptoContext.Provider value={{ loading, crypto, assets, addAsset }}>
+    <CryptoContext.Provider
+      value={{ loading, crypto, assets, addAsset, drawer, changeDrawer }}
+    >
       {children}
     </CryptoContext.Provider>
   );
