@@ -41,8 +41,31 @@ export function CryptoContextProvider({ children }) {
     preloader();
   }, []);
 
-  function addAsset(newAsset) {
-    setAssets((prev) => mapAssets([...prev, newAsset], crypto));
+  function addAsset(newAsset, coin) {
+    let update = false;
+    const updatedAsset = assets.map((asset) => {
+      if (asset.id === newAsset.id) {
+        update = true;
+        asset.price =
+          (asset.price * asset.amount + newAsset.price * newAsset.amount) /
+          (asset.amount + newAsset.amount);
+        asset.amount = asset.amount + newAsset.amount;
+        asset.date = newAsset.date;
+        asset.grow = asset.price < coin.price;
+        asset.growPercent = percentDifference(asset.price, coin.price);
+        asset.totalAmount = asset.amount * coin.price;
+        asset.totalProfit =
+          coin.price * asset.amount - asset.price * asset.amount;
+        return asset;
+      }
+      return asset;
+    });
+
+    console.log("up", updatedAsset);
+    setAssets(() => {
+      if (update) return mapAssets([...updatedAsset], crypto);
+      return mapAssets([...updatedAsset, newAsset], crypto);
+    });
   }
 
   return (

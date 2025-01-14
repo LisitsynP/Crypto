@@ -76,7 +76,7 @@ export default function AddAssetForm({ onClose }) {
       date: value.date?.$d ?? new Date(),
     };
     assetRef.current = newAsset;
-    addAsset(newAsset);
+    addAsset(newAsset, coin);
     setSubmitted(true);
   }
 
