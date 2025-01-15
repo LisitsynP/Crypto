@@ -34,13 +34,27 @@ export function CryptoContextProvider({ children }) {
     async function preloader() {
       setLoading(true);
       const { result } = await fakeFetchCrypto();
-      const assets = await FetchAssets();
+      // const assets = await FetchAssets();
+      const assets =
+        JSON.parse(localStorage.getItem("Assets")) === null
+          ? await FetchAssets()
+          : JSON.parse(localStorage.getItem("Assets"));
       setAssets(mapAssets(assets, result));
       setCrypto(result);
       setLoading(false);
     }
     preloader();
   }, []);
+
+  function deleteAsset(v) {
+    const currnetAssets = assets.filter((asset) => {
+      if (asset.name !== v.name) {
+        return asset;
+      }
+    });
+    setAssets(currnetAssets);
+    localStorage.setItem("Assets", JSON.stringify(currnetAssets));
+  }
 
   function addAsset(newAsset, coin) {
     let update = false;
@@ -66,6 +80,14 @@ export function CryptoContextProvider({ children }) {
       if (update) return mapAssets([...updatedAsset], crypto);
       return mapAssets([...updatedAsset, newAsset], crypto);
     });
+    localStorage.setItem(
+      "Assets",
+      JSON.stringify(
+        update
+          ? mapAssets([...updatedAsset], crypto)
+          : mapAssets([...updatedAsset, newAsset], crypto)
+      )
+    );
   }
 
   function changeDrawer(bool) {
@@ -74,7 +96,15 @@ export function CryptoContextProvider({ children }) {
 
   return (
     <CryptoContext.Provider
-      value={{ loading, crypto, assets, addAsset, drawer, changeDrawer }}
+      value={{
+        loading,
+        crypto,
+        assets,
+        addAsset,
+        drawer,
+        changeDrawer,
+        deleteAsset,
+      }}
     >
       {children}
     </CryptoContext.Provider>
